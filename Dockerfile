@@ -6,7 +6,6 @@ COPY ./requirements.txt /code/requirements.txt
 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-COPY ./test_fastapi.py /code/
-COPY ./test.py /code/
+COPY ./app /code/app
 
-CMD ['uvicorn', 'test_fastapi:app', '--host', '0.0.0.0', '--port', '80']
+CMD ['uvicorn', 'app.main:app', '--host', '0.0.0.0', '--port', '80']
