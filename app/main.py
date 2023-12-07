@@ -1,15 +1,27 @@
-from typing import Union
+# app/main.py
 
 from fastapi import FastAPI
 
-app = FastAPI()
+from app.db import database, User
+
+
+app = FastAPI(title="FastAPI, Docker, and Traefik")
 
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+async def read_root():
+    return await User.objects.all()
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.on_event("startup")
+async def startup():
+    if not database.is_connected:
+        await database.connect()
+    # create a dummy entry
+    await User.objects.get_or_create(email="test@test.com")
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    if database.is_connected:
+        await database.disconnect()
