@@ -1,27 +1,40 @@
+# версия компоуса?
 version: '3.8'
-
+# разбиение по контейнерам
 services:
+  # контейнер web
   web:
+    # сборка контейнера в соотвествии с dockerfile
     build: .
+    # ждем пока не появиться сигнал на 5432( то есть не запуститься db затем стартует сервер uvicorn  с приложением(проверка на запуск db)
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
+    # дирректория со значениями
     volumes:
       - .:/app
+    # при подаче на порт 8008 приложения произведет переадресацию на 8000 порт контейнера
     ports:
       - '8008:8000'
+    # установка переменных окружения(параметры обращения к db
     environment:
       - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
+    # ожидать запуска db потом запустит этот контейнер
     depends_on:
       - db
+  # контейнер db
   db:
+      # использовать образ postgres:15-alpine
       image: postgres:15-alpine
+      # дирректория со значениями
       volumes:
         - postgres_data:/var/lib/postgresql/data/
+      # установка порта??????
       expose:
         - 5432
+      # установка параметров окружения
       environment:
         - POSTGRES_USER=fastapi_traefik
         - POSTGRES_PASSWORD=fastapi_traefik
         - POSTGRES_DB=fastapi_traefik
-
+# ?????????????????? он не дописан?????
 volumes:
   postgres_data:
