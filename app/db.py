@@ -1,3 +1,4 @@
+# модель создания pydantic и таблици SQLAlchemy
 import databases
 import ormar
 import sqlalchemy

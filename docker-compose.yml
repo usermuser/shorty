@@ -1,6 +1,6 @@
-# версия компоуса?
+# версия файла
 version: '3.8'
-# разбиение по контейнерам
+# описание используемых сервисов
 services:
   # контейнер web
   web:
@@ -8,7 +8,7 @@ services:
     build: .
     # ждем пока не появиться сигнал на 5432( то есть не запуститься db затем стартует сервер uvicorn  с приложением(проверка на запуск db)
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
-    # дирректория со значениями
+    # том данных устанавливает соответствие текущей дирректории  директории app в контейнере
     volumes:
       - .:/app
     # при подаче на порт 8008 приложения произведет переадресацию на 8000 порт контейнера
@@ -24,10 +24,10 @@ services:
   db:
       # использовать образ postgres:15-alpine
       image: postgres:15-alpine
-      # дирректория со значениями
+      # том данных
       volumes:
         - postgres_data:/var/lib/postgresql/data/
-      # установка порта??????
+      # установка порта
       expose:
         - 5432
       # установка параметров окружения
@@ -35,6 +35,6 @@ services:
         - POSTGRES_USER=fastapi_traefik
         - POSTGRES_PASSWORD=fastapi_traefik
         - POSTGRES_DB=fastapi_traefik
-# ?????????????????? он не дописан?????
+# связывает  postgres_data  /var/lib/postgresql/data/
 volumes:
   postgres_data:
