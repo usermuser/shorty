@@ -26,7 +26,7 @@ DB:
 
 User:
 user_id: positiveinteger
-email: charfield(max_length=4)
+email: charfield(max_length=128)
 created: datetime
 
 URL:
@@ -44,3 +44,14 @@ Switch:
 user_id:
 url_id:
 
+
+Models:
+
+class User(ormar.Model):
+    class Meta:
+        database = database
+        metadata = metadata
+
+    user_id: int = ormar.Integer(primary_key=True)
+    email: str = ormar.String(max_length=128)
+    created: ormar.DateTime(timezone=True)
