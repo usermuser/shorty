@@ -1,12 +1,13 @@
-FROM python:3.10
-
-WORKDIR /code
-
+#   использовать версию 3.10
+FROM python:3.11.1-slim
+#   устанавливает рабочую директорию
+WORKDIR /app
+#   устанавливает постоянные переменные среды
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
-
-COPY ./requirements.txt /code/requirements.txt
-
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-
-COPY ./app /code/app
+#   копирвование requirements
+COPY requirements.txt .
+# запуск установки пакетов из requirements
+RUN pip install -r requirements.txt
+#  копировать приложение из каталога в обра
+COPY . .

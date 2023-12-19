@@ -1,0 +1,13 @@
+#dockerfile production
+#забираем guicorn сервер для создания экземпляровuvicorn
+FROM tiangolo/uvicorn-gunicorn:python3.11-slim
+
+#установка netcat
+RUN apt-get update && apt-get install -y netcat-openbsd
+
+#установка библиотек
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+#копируем приложения
+COPY . .

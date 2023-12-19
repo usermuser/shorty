@@ -1,0 +1,20 @@
+# traefik.dev.toml
+
+# прослушивание порта 80
+[entryPoints]
+  [entryPoints.web]
+    address = ":80"
+
+# Traefik панель управения по http
+[api]
+insecure = true
+
+[log]
+level = "DEBUG"
+
+[accessLog]
+
+# отключение автоматического исполнения конейнеров
+[providers]
+  [providers.docker]
+    exposedByDefault = false
