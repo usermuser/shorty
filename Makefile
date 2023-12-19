@@ -3,3 +3,6 @@ rm_none_images:
 
 frash_build:
 	docker compose up -d --build
+
+tests:
+	docker compose exec -it web pytest
