@@ -16,5 +16,31 @@ links shortener
 - GET: запрос по короткой ссылке,
   мы редиректим на длинную ссылку.
 
-python version: 3.12 in docker
+python version: 3.11-slim in docker
+
+docker manuals:
+https://tecadmin.net/how-to-dockerize-python-fastapi-application/
+
+
+DB:
+
+User:
+user_id: positiveinteger
+email: charfield(max_length=4)
+created: datetime
+
+URL:
+url_id: positiveinteger
+long_url: charfield(max_length=256) # unique
+short_url: charfield(max_length=4)
+created: datetime
+
+Stat:
+url_id: positiveinteger  -> ormar.ForeignKey(Url)
+request_ip: ip_field
+used_date: datetime
+
+Switch:
+user_id:
+url_id:
 
