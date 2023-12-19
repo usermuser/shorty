@@ -11,9 +11,12 @@ services:
     # том данных устанавливает соответствие текущей дирректории  директории app в контейнере
     volumes:
       - .:/app
+    # используеться для traefik вместо ports все запросы принимаються только с порта 8000
+    expose:
+      - 8000
     # при подаче на порт 8008 приложения произведет переадресацию на 8000 порт контейнера
-    ports:
-      - '8008:8000'
+    #ports:
+    #  - '8008:8000'
     # установка переменных окружения(параметры обращения к db
     environment:
       - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
@@ -21,6 +24,12 @@ services:
     depends_on:
       - db
   # контейнер db
+    labels:
+      - "traefik.enable=true"
+      #- 'traefik.enable=true'
+      # перенаправляет на траефик когда запрс имеет вид Host("fastapi.localhost")
+      #- 'traefik.http routers.fastapi.rule=Host("fastapi.localhost")'
+      - "traefik.http.routers.fastapi.rule=Host(`fastapi.localhost`)"
   db:
       # использовать образ postgres:15-alpine
       image: postgres:15-alpine
@@ -35,6 +44,17 @@ services:
         - POSTGRES_USER=fastapi_traefik
         - POSTGRES_PASSWORD=fastapi_traefik
         - POSTGRES_DB=fastapi_traefik
+  #Загрузка и настройка образа traefik
+  traefik:
+    image: traefik:v2.9.6
+    ports:
+      - 8008:80
+      - 8081:8080
+    volumes:
+    # сопаставление лок файла конфигурации и файла контейнера для синхолнизации
+      - "./traefik.dev.toml:/etc/traefik/traefik.toml"
+    # позваляет обнаруживать другие контейнера
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
 # связывает  postgres_data  /var/lib/postgresql/data/
 volumes:
   postgres_data:

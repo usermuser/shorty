@@ -3,7 +3,7 @@
 FROM tiangolo/uvicorn-gunicorn:python3.11-slim
 
 #установка netcat
-RUN apt-get update && apt-get install -y netcat
+RUN apt-get update && apt-get install -y netcat-openbsd
 
 #установка библиотек
 COPY requirements.txt .

@@ -21,7 +21,8 @@ async def startup():
         # ожидать подключения к базе
         await database.connect()
     # выставить пользователю указанный емэйл. каждому???? если одному то которому?????
-    await User.objects.get_or_create(email="test@test.com")
+    await User.objects.all()
+    #await User.objects.get_or_create(email="test@test.com")
 
 # проверка на закрытие базы
 @app.on_event("shutdown")
