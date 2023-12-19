@@ -1,27 +1,60 @@
+# версия файла
 version: '3.8'
-
+# описание используемых сервисов
 services:
+  # контейнер web
   web:
+    # сборка контейнера в соотвествии с dockerfile
     build: .
+    # ждем пока не появиться сигнал на 5432( то есть не запуститься db затем стартует сервер uvicorn  с приложением(проверка на запуск db)
     command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
+    # том данных устанавливает соответствие текущей дирректории  директории app в контейнере
     volumes:
       - .:/app
-    ports:
-      - '8008:8000'
+    # используеться для traefik вместо ports все запросы принимаються только с порта 8000
+    expose:
+      - 8000
+    # при подаче на порт 8008 приложения произведет переадресацию на 8000 порт контейнера
+    #ports:
+    #  - '8008:8000'
+    # установка переменных окружения(параметры обращения к db
     environment:
       - DATABASE_URL=postgresql://fastapi_traefik:fastapi_traefik@db:5432/fastapi_traefik
+    # ожидать запуска db потом запустит этот контейнер
     depends_on:
       - db
+  # контейнер db
+    labels:
+      - "traefik.enable=true"
+      #- 'traefik.enable=true'
+      # перенаправляет на траефик когда запрс имеет вид Host("fastapi.localhost")
+      #- 'traefik.http routers.fastapi.rule=Host("fastapi.localhost")'
+      - "traefik.http.routers.fastapi.rule=Host(`fastapi.localhost`)"
   db:
+      # использовать образ postgres:15-alpine
       image: postgres:15-alpine
+      # том данных
       volumes:
         - postgres_data:/var/lib/postgresql/data/
+      # установка порта
       expose:
         - 5432
+      # установка параметров окружения
       environment:
         - POSTGRES_USER=fastapi_traefik
         - POSTGRES_PASSWORD=fastapi_traefik
         - POSTGRES_DB=fastapi_traefik
-
+  #Загрузка и настройка образа traefik
+  traefik:
+    image: traefik:v2.9.6
+    ports:
+      - 8008:80
+      - 8081:8080
+    volumes:
+    # сопаставление лок файла конфигурации и файла контейнера для синхолнизации
+      - "./traefik.dev.toml:/etc/traefik/traefik.toml"
+    # позваляет обнаруживать другие контейнера
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+# связывает  postgres_data  /var/lib/postgresql/data/
 volumes:
   postgres_data:
