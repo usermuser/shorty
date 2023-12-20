@@ -9,8 +9,8 @@ app = FastAPI(title="FastAPI, Docker, and Traefik")
 @app.get("/")
 # используеться асинхронный метод????? как это происходитТ???? и в чем заключаеться????
 async def read_root():
-    # return await User.objects.all()
-    return {"msg": "Hello World"}
+    return await User.objects.all()
+    #return {"msg": "Hello World"}
 
 
 # проверка события запуск
@@ -21,8 +21,9 @@ async def startup():
         # ожидать подключения к базе
         await database.connect()
     # выставить пользователю указанный емэйл. каждому???? если одному то которому?????
-    await User.objects.all()
-    #await User.objects.get_or_create(email="test@test.com")
+    #await User.objects.all()
+    await User.objects.get_or_create(email="test@test.com")
+
 
 
 # проверка на закрытие базы
